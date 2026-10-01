@@ -71,7 +71,7 @@ changed and how you tested it.
 
 | Student | AI tool(s) used | Used it for |
 |---------|-----------------|-------------|
-| <name>  |                 |             |
+| Saad Moazzam | ChatGPT | Used for explanations of nested lists, grid coordinates, functions, conditionals, loops, movement validation, reward systems, Git commands, and interpreting test output. The submitted implementation was written and verified independently based on those explanations. |
 | <name>  |                 |             |
 | <name>  |                 |             |
 | <name>  |                 |             |

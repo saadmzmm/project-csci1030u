@@ -54,7 +54,7 @@ Worked example:
 
 | Student | Planning | Control flow | Collections | Functions |
 |---------|----------|--------------|-------------|-----------|
-| Saad Moazzam  |          |              |             |           |
+| Saad Moazzam | 9da08e0 | c37753d | c37753d | c37753d |
 | Irfan Nasery  |          |              |             |           |
 
 <!-- Optional but recommended: a line per member saying which function or file to look at. -->
