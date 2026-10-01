@@ -21,11 +21,8 @@ in - the rest of this file is one row per member, per milestone, against their s
 
 | Student | Slice (the feature they own) |
 |---------|------------------------------|
-| <name>  | <feature>                    |
-| <name>  | <feature>                    |
-| <name>  | <feature>                    |
-| <name>  | <feature>                    |
-| <name>  | <feature>                    |
+| Saad Moazzam  | Agent movement, rewards, and reinforcemnt learning                    |
+| Irfan Nasery  | Grid world, obstacles, goals, and game logic                   |
 
 <!-- Teams of four: delete the fifth row, here and in the tables below. -->
 
@@ -57,11 +54,8 @@ Worked example:
 
 | Student | Planning | Control flow | Collections | Functions |
 |---------|----------|--------------|-------------|-----------|
-| <name>  |          |              |             |           |
-| <name>  |          |              |             |           |
-| <name>  |          |              |             |           |
-| <name>  |          |              |             |           |
-| <name>  |          |              |             |           |
+| Saad Moazzam  |          |              |             |           |
+| Irfan Nasery  |          |              |             |           |
 
 <!-- Optional but recommended: a line per member saying which function or file to look at. -->
 

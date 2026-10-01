@@ -1,27 +1,17 @@
-# <your project name>
+# Gridworld Arena
 
 ## The application
 
-<Two or three sentences: what are you building, and who plays or uses it? It has to fit the
-networked, multi-user theme - see the "Suggested projects" section of
-[`MILESTONES.md`](MILESTONES.md). Name one of the suggestions, or describe your own idea.>
+Gridworld Arena is a terminal-based grid game where a player or AI agent must navigate through a world containing obstacles and reach a goal.
+
+As the project develops, the AI agent will use reinforcement learning to learn which actions lead to better rewards. Later milestones will expand the game with saved data, a user interface, multiplayer networking, and concurrent players.
 
 ## The team
 
 | Full name | GitHub username |
 |-----------|-----------------|
-| <name>    | @<username>     |
-| <name>    | @<username>     |
-| <name>    | @<username>     |
-| <name>    | @<username>     |
-| <name>    | @<username>     |
-
-Note:  Be sure to [add all of the group members to as collaborators on this repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/repository-access-and-collaboration/inviting-collaborators-to-a-personal-repository).
-
-<!-- Fill this in at Milestone 0. Teams of four: delete the fifth row.
-     The GitHub username must be the one that authors your commits, so your work in the
-     history can be matched to you - check yours with:  git log --format='%an <%ae>'
-     Who owns which slice, and what each member contributed, go in CONTRIBUTIONS.md. -->
+| Saad Moazzam    | @saadmzmm     |
+| Irfan Nasery    | @<username>     |
 
 ## Running it
 
