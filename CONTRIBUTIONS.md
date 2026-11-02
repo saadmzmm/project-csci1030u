@@ -21,8 +21,11 @@ in - the rest of this file is one row per member, per milestone, against their s
 
 | Student | Slice (the feature they own) |
 |---------|------------------------------|
-| Saad Moazzam  | Agent movement, rewards, and reinforcemnt learning                    |
-| Irfan Nasery  | Grid world, obstacles, goals, and game logic                   |
+| Saad Moazzam | Player movement, scoring, session features, and future agent behavior |
+| Irfan Nasery | World, obstacles, goals, treasure, and world validation |
+
+The Milestone 2 file responsibilities and remaining features are described in
+[`docs/MILESTONE_2_PLAN.md`](docs/MILESTONE_2_PLAN.md).
 
 <!-- Teams of four: delete the fifth row, here and in the tables below. -->
 
@@ -55,7 +58,9 @@ Worked example:
 | Student | Planning | Control flow | Collections | Functions |
 |---------|----------|--------------|-------------|-----------|
 | Saad Moazzam | 9da08e0 | c37753d | c37753d | c37753d |
-| Irfan Nasery  |          |              |             |           |
+| Irfan Nasery | 9da08e0 | c37753d | c37753d | c37753d |
+
+Irfan's row lists shared project references. See the Milestone 1 note at the bottom.
 
 <!-- Optional but recommended: a line per member saying which function or file to look at. -->
 
@@ -63,11 +68,8 @@ Worked example:
 
 | Student | OOP | File I/O | Recursion | Command-line args | Interface (TUI/GUI) |
 |---------|-----|----------|-----------|-------------------|---------------------|
-| <name>  |     |          |           |                   |                     |
-| <name>  |     |          |           |                   |                     |
-| <name>  |     |          |           |                   |                     |
-| <name>  |     |          |           |                   |                     |
-| <name>  |     |          |           |                   |                     |
+| Saad Moazzam | | | | | |
+| Irfan Nasery | | | | | |
 
 ## Milestone 3 - Final Product (Units 04-05)
 
@@ -78,3 +80,10 @@ Worked example:
 | <name>  |                |                    |         |             |
 | <name>  |                |                    |         |             |
 | <name>  |                |                    |         |             |
+
+## Milestone 1 note
+
+For Milestone 1 we communicated through Discord. At the beginning Saad was the
+only person pushing code to GitHub. Both rows reference the same project commits.
+Git records Saad as their author so Irfan's entries are shared references rather
+than evidence of commits authored by Irfan.

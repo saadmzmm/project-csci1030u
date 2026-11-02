@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Local game progress (keep the shared directory in the repository)
+data/saves/*
+!data/saves/.gitkeep

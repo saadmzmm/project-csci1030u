@@ -2,13 +2,13 @@
 
 ## The Application
 
-Gridworld Arena is a terminal-based grid game where a player or AI agent navigates through a world containing obstacles and attempts to reach a goal.
+Gridworld Arena is a terminal-based grid game where a player navigates through a world containing obstacles and attempts to reach a goal.
 
 The player moves through the grid using `W`, `A`, `S`, and `D`. The game prevents the player from moving outside the grid or through walls and uses a reward system to score different actions.
 
-As the project develops, an AI agent will use reinforcement learning to learn which actions lead to better rewards. Later milestones will expand the game with persistent data, a user interface, multiplayer networking, and concurrent players.
+The project now has a class-based foundation for Milestone 2. The original movement, wall checks, goal, and scoring are playable. Saving/loading, command-line options, recursion, treasures, and TUI menus are upcoming Milestone 2 work. A learning agent and multiplayer networking remain later goals.
 
-For Milestone 1, the project is a single-machine terminal prototype using basic Python concepts such as functions, conditionals, loops, strings, lists, and nested lists.
+The full Milestone 2 definition of done has not been completed yet. See [the work plan](docs/MILESTONE_2_PLAN.md) for the division between Saad and Irfan.
 
 ## The Team
 
@@ -21,7 +21,7 @@ For Milestone 1, the project is a single-machine terminal prototype using basic 
 
 The project currently uses only the Python standard library.
 
-No external dependencies are required for Milestone 1.
+No external dependencies are required. The current code is verified with Python 3.11.
 
 Future milestones will continue to use standard-library features where possible, including tools such as `json`, `socket`, `threading` or `asyncio`, and potentially `tkinter` as required by later course topics.
 
@@ -53,14 +53,80 @@ Current grid symbols:
 - `#` - wall
 - `G` - goal
 - `.` - empty space
-- `T` - treasure
 
 The current reward system is:
 
 - Normal valid move: `-1`
 - Blocked move: `-5`
-- Treasure: `+20` bonus
 - Reaching the goal: `+100`
+
+The goal reward replaces the normal movement cost. For example, `DDDDSSSS`
+reaches the goal in eight moves and scores `93`. Invalid commands do not change
+the score. Input accepts uppercase letters and surrounding spaces; Q or the end
+of input closes the game cleanly.
+
+## Project Structure
+
+```text
+project-csci1030u/
+|-- data/
+|   |-- maps/
+|   |   `-- README.md           # Explains where future map files go
+|   `-- saves/
+|       `-- .gitkeep            # Keeps the save folder in Git
+|-- docs/
+|   `-- MILESTONE_2_PLAN.md     # Work plan for Irfan and Saad
+|-- gridworld/
+|   |-- cli.py                 # Keyboard input and board display
+|   |-- game.py                # Connects the player and world
+|   |-- player.py              # Player position movement and score
+|   `-- world.py               # Board walls goal and position checks
+|-- .gitignore                 # Files and folders Git should ignore
+|-- AI-USAGE.md
+|-- CONTRIBUTIONS.md
+|-- main.py                    # Starts the game
+|-- MILESTONES.md
+`-- README.md
+```
+
+Python may create a `__pycache__` folder when the game runs. It stores generated
+cache files and is ignored by Git, so it is not included in the structure above.
+
+`Player`, `World`, and `Game` contain game state and rules without terminal input
+or printing. `cli.py` handles user interaction, and `main.py` remains the launch
+command. The map and save folders reserve space for future file handling; the
+application does not read or write them yet.
+
+To prepare a world directly, create it and then call its regular `setup` method:
+
+```python
+from gridworld.world import World
+
+world = World()
+world.setup()
+```
+
+All three game classes use a regular `setup` method. To prepare a complete game:
+
+```python
+from gridworld.game import Game
+
+game = Game()
+game.setup()
+```
+
+The game setup prepares its world and player too. Call `setup` before using a new
+object. The launch command already does this for you.
+
+## Milestone 2 Ownership
+
+- **Saad:** extend `Player`, movement and scoring, player save/load, recursive
+  hints, the `--save-file` option, and player menu features.
+- **Irfan:** extend `World`, boards and treasures, world save/load, recursive
+  reachability checks, the `--map-file` option, and world menu features.
+- **Shared:** connect the features through `Game` and the console, agree on one
+  save format, and verify the complete game. Each member contributes all five
+  required Milestone 2 topics through their own feature.
 
 ## Milestone 1 Planning
 
@@ -103,6 +169,9 @@ The world is represented using a nested list where each inner list represents on
 - Boolean conditions
 
 ### Irfan Nasery - Treasure and World Reward System
+
+**Status:** this section describes planned work. Treasure is not implemented in
+the current class-based foundation.
 
 **Purpose:**
 
@@ -183,3 +252,4 @@ The full system architecture and Big-O analysis will be added for Milestone 3 as
 | [`MILESTONES.md`](MILESTONES.md) | The project requirements and milestone expectations |
 | [`CONTRIBUTIONS.md`](CONTRIBUTIONS.md) | Records each team member's feature slice and the commits that demonstrate each required topic |
 | [`AI-USAGE.md`](AI-USAGE.md) | Records the team's AI usage and disclosure |
+| [`docs/MILESTONE_2_PLAN.md`](docs/MILESTONE_2_PLAN.md) | Divides the next milestone's work between Saad and Irfan |

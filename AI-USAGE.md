@@ -81,7 +81,7 @@ changed and how you tested it.
 
 | Student | AI tool(s) used | Used it for |
 |---------|-----------------|-------------|
-| <name>  |                 |             |
+| Irfan Nasery | ChatGPT | Used for explanations of how to organize the project folders and separate class responsibilities so the existing game is cleaner and easier to maintain and extend. |
 | <name>  |                 |             |
 | <name>  |                 |             |
 | <name>  |                 |             |
