@@ -10,15 +10,17 @@ The game runs and the classes are ready to extend. Here is what we still need to
 
 ## Irfan
 
-- Extend `World` in `gridworld/world.py` with treasures that can only be collected once.
-- Add saving and loading of the board and remaining treasures. Put map files in `data/maps/`.
-- Add a recursive check to see whether the goal and treasures can be reached.
-- In `gridworld/cli.py` use `argparse` to add `--map-file` and build the board selection and preview menu.
+- Done: `World` accepts `T` and returns a bonus of 20 when collected. The cell becomes `.` and cannot give another bonus.
+- Done: `load_map` reads JSON maps. `data/maps/default.json` contains the first map.
+- Done: `get_data` prepares the world section for saving and `load_data` restores it with the remaining treasures.
+- Done: a recursive check explores connected cells and reports unreachable goals and treasures when loading a map.
+- Done: `--map-file` uses `argparse` to load the selected board and show clear loading errors.
+- Build the board selection and preview menu in `gridworld/cli.py`.
 
 ## Together
 
 - Create `gridworld/storage.py` and use one JSON save file with separate player and world sections. Keep saves in `data/saves/`.
-- Connect our features in `gridworld/game.py` and agree on the treasure bonus.
+- Connect our features in `gridworld/game.py`. Treasure adds 20 to the normal move reward for a total of 19.
 - Let each other know before editing shared files.
 - Save and close the game. Open it again and check that all progress is restored.
 - Update the README and our own rows in `CONTRIBUTIONS.md`.

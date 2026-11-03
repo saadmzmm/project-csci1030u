@@ -1,6 +1,18 @@
 # Map files
 
-This folder is reserved for the JSON board files in Irfan's Milestone 2 work.
-The current default board is defined in `gridworld/world.py`.
+`default.json` contains a board with walls and a goal and three treasures.
+Each map file contains `grid` and `start_position` fields.
 
-Map loading and the planned `--map-file` option are not implemented yet.
+Load a map from the project folder:
+
+```python
+from gridworld.world import World
+
+world = World()
+world.load_map("data/maps/default.json")
+```
+
+World symbols are `.` for an open cell and `#` for a wall and `G` for the goal
+and `T` for treasure. Collected treasures become open cells.
+
+The `--map-file` command-line option is still upcoming work.

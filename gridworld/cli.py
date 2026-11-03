@@ -1,6 +1,9 @@
 # Console input and display
 
+import argparse
+
 from gridworld.game import Game
+from gridworld.world import World
 
 
 def display_grid(game):
@@ -21,9 +24,27 @@ def display_grid(game):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Play Gridworld Arena")
+    parser.add_argument("--map-file", help="Path to a JSON map file")
+    arguments = parser.parse_args()
+
+    world = World()
+
+    if arguments.map_file is None:
+        world.setup()
+    else:
+        try:
+            world.load_map(arguments.map_file)
+        except OSError as error:
+            parser.error(f"Cannot open map file '{arguments.map_file}': {error}")
+        except ValueError as error:
+            parser.error(f"Invalid map file '{arguments.map_file}': {error}")
+        except RecursionError:
+            parser.error("This map is too large for the recursive check. Use a smaller map.")
+
     print("GRIDWORLD ARENA\n")
     game = Game()
-    game.setup()
+    game.setup(world)
 
     while not game.is_finished():
         display_grid(game)

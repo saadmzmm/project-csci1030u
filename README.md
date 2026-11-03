@@ -6,7 +6,7 @@ Gridworld Arena is a terminal-based grid game where a player navigates through a
 
 The player moves through the grid using `W`, `A`, `S`, and `D`. The game prevents the player from moving outside the grid or through walls and uses a reward system to score different actions.
 
-The project now has a class-based foundation for Milestone 2. The original movement, wall checks, goal, and scoring are playable. Saving/loading, command-line options, recursion, treasures, and TUI menus are upcoming Milestone 2 work. A learning agent and multiplayer networking remain later goals.
+The project now has a class-based foundation for Milestone 2. The original movement, wall checks, goal, and scoring are playable. `World` also supports treasures, JSON map loading, and preparing and restoring world save data. Player treasure scoring, full game saving/loading, command-line options, recursion, and TUI menus are still upcoming work. A learning agent and multiplayer networking remain later goals.
 
 The full Milestone 2 definition of done has not been completed yet. See [the work plan](docs/MILESTONE_2_PLAN.md) for the division between Saad and Irfan.
 
@@ -53,6 +53,7 @@ Current grid symbols:
 - `#` - wall
 - `G` - goal
 - `.` - empty space
+- `T` - treasure in loaded maps
 
 The current reward system is:
 
@@ -71,7 +72,8 @@ of input closes the game cleanly.
 project-csci1030u/
 |-- data/
 |   |-- maps/
-|   |   `-- README.md           # Explains where future map files go
+|   |   |-- default.json        # Board with three treasures
+|   |   `-- README.md           # Map format and loading example
 |   `-- saves/
 |       `-- .gitkeep            # Keeps the save folder in Git
 |-- docs/
@@ -80,7 +82,7 @@ project-csci1030u/
 |   |-- cli.py                 # Keyboard input and board display
 |   |-- game.py                # Connects the player and world
 |   |-- player.py              # Player position movement and score
-|   `-- world.py               # Board walls goal and position checks
+|   `-- world.py               # Board treasures map loading and world data
 |-- .gitignore                 # Files and folders Git should ignore
 |-- AI-USAGE.md
 |-- CONTRIBUTIONS.md
@@ -94,8 +96,9 @@ cache files and is ignored by Git, so it is not included in the structure above.
 
 `Player`, `World`, and `Game` contain game state and rules without terminal input
 or printing. `cli.py` handles user interaction, and `main.py` remains the launch
-command. The map and save folders reserve space for future file handling; the
-application does not read or write them yet.
+command. The world class can read maps from `data/maps/`. The console game still
+starts with its original board. `data/saves/` is reserved for the shared game
+saving feature that will be added later.
 
 To prepare a world directly, create it and then call its regular `setup` method:
 
@@ -117,6 +120,31 @@ game.setup()
 
 The game setup prepares its world and player too. Call `setup` before using a new
 object. The launch command already does this for you.
+
+## World Treasures and Map Files
+
+To load the new map and collect a treasure from the project folder:
+
+```python
+from gridworld.world import World
+
+world = World()
+world.load_map("data/maps/default.json")
+bonus = world.collect_treasure([0, 4])
+```
+
+`bonus` is 20 on the first collection and 0 on later visits. The collected `T`
+cell becomes `.`. This method returns the bonus but does not change player scores.
+Saad's player code will connect collection to movement and scoring.
+
+`world.get_data()` returns a separate copy of the grid and starting position.
+`world.load_data(data)` restores them after validation. The saved grid includes
+only treasures that remain. These methods handle the world section of the planned
+save file. Player data and the shared file writer are still upcoming work.
+
+Map files must contain a rectangular grid with one goal and a valid starting
+position. Missing files raise a file error. Invalid JSON or world data raises a
+value error. Invalid loaded data leaves the current world unchanged.
 
 ## Milestone 2 Ownership
 
@@ -170,8 +198,9 @@ The world is represented using a nested list where each inner list represents on
 
 ### Irfan Nasery - Treasure and World Reward System
 
-**Status:** this section describes planned work. Treasure is not implemented in
-the current class-based foundation.
+**Status:** this section records the original plan. The world now supports
+treasure collection and world data restoration. Connecting collection to player
+movement and scoring is still upcoming work.
 
 **Purpose:**
 
@@ -179,7 +208,8 @@ Add collectible treasures to the Gridworld environment so the player can earn ad
 
 **Data:**
 
-Treasure locations are stored in a list. Each treasure contains a row and column position.
+The original plan used a separate list of treasure positions. The current world
+stores treasures directly as `T` cells in the grid instead.
 
 Example:
 
@@ -193,10 +223,10 @@ treasures = [
 
 **Steps:**
 
-1. Store treasure locations in a list.
+1. Store treasure locations as `T` cells in the grid.
 2. Display remaining treasures using `T`.
 3. Check whether the player moves onto a treasure location.
-4. Remove a treasure from the list after it is collected.
+4. Change the treasure cell to `.` after it is collected.
 5. Add the treasure bonus to the player's score.
 6. Continue displaying only the treasures that have not already been collected.
 
