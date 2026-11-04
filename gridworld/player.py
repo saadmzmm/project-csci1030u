@@ -31,7 +31,7 @@ class Player:
             if world.is_goal(new_position):
                 reward = 100
             else:
-                reward = -1
+                reward = -1 + world.collect_treasure(new_position) # treasure move + 19
         else:
             reward = -5
 
