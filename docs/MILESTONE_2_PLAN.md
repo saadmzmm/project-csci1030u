@@ -15,7 +15,7 @@ The game runs and the classes are ready to extend. Here is what we still need to
 - Done: `get_data` prepares the world section for saving and `load_data` restores it with the remaining treasures.
 - Done: a recursive check explores connected cells and reports unreachable goals and treasures when loading a map.
 - Done: `--map-file` uses `argparse` to load the selected board and show clear loading errors.
-- Build the board selection and preview menu in `gridworld/cli.py`.
+- Done: the world menu selects boards and previews remaining treasures as `T` and runs the recursive map check before starting a game.
 
 ## Together
 
