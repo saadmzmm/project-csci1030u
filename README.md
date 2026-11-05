@@ -1,285 +1,236 @@
+
 # Gridworld Arena
 
-## The Application
+**CSCI 1030U — Group Project | Milestone 2: Practical Application**
 
-Gridworld Arena is a terminal-based grid game where a player navigates through a world containing obstacles and attempts to reach a goal.
+Gridworld Arena is a single-machine, terminal-based Python game. The player navigates a grid, avoids walls, collects treasures, and tries to reach the goal while earning a score. Milestone 2 extends the original prototype with classes, JSON file handling, recursion, command-line options, and an interactive terminal interface.
 
-The player moves through the grid using `W`, `A`, `S`, and `D`. The game prevents the player from moving outside the grid or through walls and uses a reward system to score different actions.
+The Milestone 2 features described below have been implemented and tested on the example map. Reinforcement learning, networking, and concurrency are **future goals**, not current functionality.
 
-The project now has a class-based foundation for Milestone 2. The original movement, wall checks, goal, and scoring are playable. `World` also supports treasures, JSON map loading, and preparing and restoring world save data. Player treasure scoring, full game saving/loading, command-line options, recursion, and TUI menus are still upcoming work. A learning agent and multiplayer networking remain later goals.
-
-The full Milestone 2 definition of done has not been completed yet. See [the work plan](docs/MILESTONE_2_PLAN.md) for the division between Saad and Irfan.
-
-## The Team
+## Team
 
 | Full name | GitHub username |
-|-----------|-----------------|
-| Saad Moazzam | @saadmzmm |
-| Irfan Nasery | @IR-Code4i6  |
+|---|---|
+| Saad Moazzam | [@saadmzmm](https://github.com/saadmzmm) |
+| Irfan Nasery | [@IR-Code4i6](https://github.com/IR-Code4i6) |
 
-## Technology Plan
+Individual implementation commits are recorded in [CONTRIBUTIONS.md](CONTRIBUTIONS.md).
 
-The project currently uses only the Python standard library.
+## Requirements and setup
 
-No external dependencies are required. The current code is verified with Python 3.11.
+- **Python:** Uses the standard library only; no `pip install` step is needed.
+- **Tested environment:** Windows using the `py` launcher. The exact Python version was not recorded in the test logs.
+- **Working directory:** Run commands from the repository root so relative `data/` paths resolve correctly.
 
-Future milestones will continue to use standard-library features where possible, including tools such as `json`, `socket`, `threading` or `asyncio`, and potentially `tkinter` as required by later course topics.
+Start the application:
 
-## Running It
+```powershell
+py main.py
+```
 
-From the project directory, run:
+Alternatively, where `python` is the appropriate command:
 
 ```bash
 python main.py
 ```
 
-On Windows, the program can also be started with:
+Use a JSON board and choose a save-file location:
 
-```bash
-py main.py
+```powershell
+py main.py --map-file data/maps/default.json --save-file data/saves/save.json
 ```
 
-The player controls are:
+View the command-line options:
 
-- `W` - move up
-- `A` - move left
-- `S` - move down
-- `D` - move right
-- `Q` - quit the game
+```powershell
+py main.py --help
+```
 
-Current grid symbols:
+| Argument | Meaning | Default |
+|---|---|---|
+| `--map-file PATH` | Load the specified JSON map before opening the World Menu | Original board |
+| `--save-file PATH` | File used by the **V** (save) and **L** (load) commands | `data/saves/save.json` |
 
-- `P` - player
-- `#` - wall
-- `G` - goal
-- `.` - empty space
-- `T` - treasure in loaded maps
+**Note:** The directory containing the save file must already exist. The program reports a save error rather than creating a missing directory automatically.
 
-The current reward system is:
+## Using the application
 
-- Normal valid move: `-1`
-- Blocked move: `-5`
-- Reaching the goal: `+100`
+### 1. World Menu
 
-The goal reward replaces the normal movement cost. For example, `DDDDSSSS`
-reaches the goal in eight moves and scores `93`. Invalid commands do not change
-the score. Input accepts uppercase letters and surrounding spaces; Q or the end
-of input closes the game cleanly.
+On launch, the application displays:
 
-## Project Structure
+```text
+WORLD MENU
+1 - Select a board
+2 - Preview board
+3 - Run map check
+4 - Start game
+Q - Quit
+```
+
+- **1 — Select a board:** Choose the original board (`0`) or a JSON map found in `data/maps/`.
+- **2 — Preview board:** Display the selected grid and its symbols.
+- **3 — Run map check:** Recursively check that the goal and remaining treasures are reachable from the start.
+- **4 — Start game:** Start only when the map passes the reachability check.
+- **Q — Quit:** Exit from the World Menu.
+
+For example, `data/maps/default.json` displays:
+
+```text
+P . . . T
+. # . # .
+T . . . .
+# . # . .
+. . T . G
+```
+
+### 2. Gameplay controls
+
+| Key | Action |
+|---|---|
+| **W** | Move up |
+| **A** | Move left |
+| **S** | Move down |
+| **D** | Move right |
+| **H** | Show a hint for the next move toward the goal |
+| **V** | Save player and world state to the selected JSON file |
+| **L** | Load player and world state from the selected JSON file |
+| **Q** | Quit the game |
+
+Input is case-insensitive and surrounding spaces are ignored. Entering `Q`, or ending terminal input, exits cleanly.
+
+**Grid symbols:** `P` = player, `#` = wall, `G` = goal, `T` = uncollected treasure, and `.` = empty cell.
+
+### 3. Scoring
+
+| Action | Score change |
+|---|---:|
+| Valid move to an empty square | `-1` |
+| Blocked move (wall or outside the grid) | `-5` |
+| Valid move collecting treasure | `+19` net (`-1` movement + `20` treasure) |
+| Entering the goal | `+100` (replaces the normal move penalty) |
+| Invalid command or requesting a hint | No change |
+
+When a treasure is collected, its `T` becomes `.`, preventing a second reward for the same treasure. The game ends when the player reaches the goal or quits.
+
+## Milestone 2 features
+
+### Object-oriented design
+
+The code separates responsibilities into four stateful classes and supporting modules:
+
+- **`Player`** (`gridworld/player.py`): position, movement, score, player serialization, and recursive route search.
+- **`HintSession`** (`gridworld/hint_session.py`): stores a hint route in `self.route`, returns the next direction, and resets the stored route after loading a game.
+- **`World`** (`gridworld/world.py`): grid, walls, goal, treasures, map loading, world serialization, and reachability checks.
+- **`Game`** (`gridworld/game.py`): creates and coordinates the player and world, processes turns, and detects completion.
+- **`storage.py`**: reads/writes combined JSON game saves.
+- **`cli.py`**: command-line options, World Menu, gameplay input, and display.
+
+`main.py` is the entry point; it calls `main()` from `gridworld/cli.py`.
+
+### Saving and loading (JSON)
+
+Press **V** to save or **L** to load. A save file contains two top-level sections:
+
+| JSON section | Data saved |
+|---|---|
+| `player` | `position` and `score` |
+| `world` | Current `grid` and `start_position` |
+
+The saved grid reflects collected treasures, so a treasure already collected does not reappear after loading. Saving uses `json.dump`; loading uses `json.load` and the class-specific `get_data()` / `load_data()` methods.
+
+To avoid damaging the running game, the loader restores data into a **temporary game**, validates the saved player position, and only then replaces the active world and player. The interface also handles missing files, corrupted JSON, invalid saved positions, and unavailable save destinations by displaying an error and continuing gameplay for the tested cases.
+
+### Recursive route hints
+
+Press **H** to ask for a directional hint, such as `Hint: Move DOWN (S)`.
+
+`Player.find_route()` uses recursive **depth-first search (DFS)**. It checks positions against world movement rules, records visited squares to avoid loops, and recursively explores neighbours until a route to the goal is found. A valid route is returned as a sequence of row/column positions. DFS is **not guaranteed to find the shortest route**.
+
+The `HintSession` class remembers a calculated route so successive hints advance along it. If the player leaves that route, `HintSession.get_next_hint(player, world)` calls the recursive player method to calculate a new route. A successful load calls `HintSession.reset()` to clear the previous route. Requesting a hint neither moves the player nor changes the score.
+
+After a reset, the recursive search can choose a **different but still valid** route because it checks neighbours in a fixed order; for example, the first hint after loading may differ from the hint displayed before saving.
+
+### Recursive map validation
+
+`World.check_reachability()` recursively examines accessible squares to verify that the goal and remaining treasures can be reached from the starting position. The World Menu runs this check before starting play. Map file loading also validates the supplied world data.
+
+## Project layout
 
 ```text
 project-csci1030u/
-|-- data/
-|   |-- maps/
-|   |   |-- default.json        # Board with three treasures
-|   |   `-- README.md           # Map format and loading example
-|   `-- saves/
-|       `-- .gitkeep            # Keeps the save folder in Git
-|-- docs/
-|   `-- MILESTONE_2_PLAN.md     # Work plan for Irfan and Saad
-|-- gridworld/
-|   |-- cli.py                 # Keyboard input and board display
-|   |-- game.py                # Connects the player and world
-|   |-- player.py              # Player position movement and score
-|   `-- world.py               # Board treasures map loading and world data
-|-- .gitignore                 # Files and folders Git should ignore
-|-- AI-USAGE.md
-|-- CONTRIBUTIONS.md
-|-- main.py                    # Starts the game
-|-- MILESTONES.md
-`-- README.md
+├── data/
+│   ├── maps/
+│   │   ├── default.json
+│   │   └── README.md
+│   └── saves/
+│       └── .gitkeep
+├── docs/
+│   └── MILESTONE_2_PLAN.md
+├── gridworld/
+│   ├── cli.py
+│   ├── game.py
+│   ├── hint_session.py
+│   ├── player.py
+│   ├── storage.py
+│   └── world.py
+├── .gitignore
+├── AI-USAGE.md
+├── CONTRIBUTIONS.md
+├── main.py
+├── MILESTONES.md
+└── README.md
 ```
 
-Python may create a `__pycache__` folder when the game runs. It stores generated
-cache files and is ignored by Git, so it is not included in the structure above.
+Runtime save files and Python `__pycache__` output are generated locally and are not part of the source-code layout above.
 
-`Player`, `World`, and `Game` contain game state and rules without terminal input
-or printing. `cli.py` handles user interaction, and `main.py` remains the launch
-command. The world class can read maps from `data/maps/`. The console game still
-starts with its original board. `data/saves/` is reserved for the shared game
-saving feature that will be added later.
+## Tests performed for Milestone 2
 
-To prepare a world directly, create it and then call its regular `setup` method:
+The team manually tested the following scenarios on the example board:
 
-```python
-from gridworld.world import World
+| Area | Verified scenario |
+|---|---|
+| World interface | Board preview, recursive map check, and starting the game |
+| Movement/scoring | Valid movement, treasure collected for `+19` net, and ongoing score updates |
+| Recursive hints | Route begins at player, ends at goal, contains valid adjacent steps, and does not change the score |
+| `HintSession` integration | Hint before movement (`DOWN`), next hint after moving (`DOWN`), and a valid fresh hint after loading (`UP` in the observed run) |
+| Saving | Saved `[2, 0]`, score `18`, and the treasure-free version of that square |
+| Loading | Restored position, score, and collected-treasure state |
+| Save/load across restart | Saved at `[2, 0]` with score `18`, exited, launched the program again, and restored the same state with `L` |
+| File errors | Missing save file, malformed JSON, invalid position `[99, 99]`, and nonexistent save directory |
+| Integration | World Menu, player controls, hints, saving, and loading working together after merging changes |
 
-world = World()
-world.setup()
+Development checks also completed without errors:
+
+```powershell
+py -m compileall -q gridworld main.py
+git diff --check
 ```
 
-All three game classes use a regular `setup` method. To prepare a complete game:
+These are **observed test cases**, not a claim of exhaustive automated test coverage.
 
-```python
-from gridworld.game import Game
+### Quick demonstration sequence
 
-game = Game()
-game.setup()
+Launch with both options:
+
+```powershell
+py main.py --map-file data/maps/default.json --save-file data/saves/save.json
 ```
 
-The game setup prepares its world and player too. Call `setup` before using a new
-object. The launch command already does this for you.
+In the **World Menu**, choose `2` (preview), `3` (check), then `4` (start). During gameplay, enter `H`, `S`, `H`, `S`, `V`, and `Q`. Relaunch with the same command, choose `4`, then press `L`: the player should resume at `[2, 0]` with score `18`, and the treasure at that position should remain collected. This save/restart/load sequence was successfully demonstrated during Milestone 2 testing.
 
-## World Treasures and Map Files
+## Milestone history and future work
 
-To load the new map and collect a treasure from the project folder:
+**Milestone 1:** Built the original playable prototype using planning, conditionals, loops, lists, functions, keyboard input, movement validation, and score calculations. The world/treasure functionality was extended during Milestone 2.
 
-```python
-from gridworld.world import World
+**Milestone 2:** Developed the class-based single-machine application with file I/O, recursion, command-line arguments, and TUI features described above. Added the stateful `HintSession` class to manage the output of the player's recursive route-finding algorithm.
 
-world = World()
-world.load_map("data/maps/default.json")
-bonus = world.collect_treasure([0, 4])
-```
+**Milestone 3 (planned):** Explore reinforcement-learning-style decisions, additional data structures and algorithm strategies, sockets/networking, and concurrency. A possible interaction model is `State → Action → Next State → Reward`; no learning agent or multiplayer networking is claimed as implemented in Milestone 2.
 
-`bonus` is 20 on the first collection and 0 on later visits. The collected `T`
-cell becomes `.`. This method returns the bonus but does not change player scores.
-Saad's player code will connect collection to movement and scoring.
+## Project documents
 
-`world.get_data()` returns a separate copy of the grid and starting position.
-`world.load_data(data)` restores them after validation. The saved grid includes
-only treasures that remain. These methods handle the world section of the planned
-save file. Player data and the shared file writer are still upcoming work.
-
-Map files must contain a rectangular grid with one goal and a valid starting
-position. Missing files raise a file error. Invalid JSON or world data raises a
-value error. Invalid loaded data leaves the current world unchanged.
-
-## Milestone 2 Ownership
-
-- **Saad:** extend `Player`, movement and scoring, player save/load, recursive
-  hints, the `--save-file` option, and player menu features.
-- **Irfan:** extend `World`, boards and treasures, world save/load, recursive
-  reachability checks, the `--map-file` option, and world menu features.
-- **Shared:** connect the features through `Game` and the console, agree on one
-  save format, and verify the complete game. Each member contributes all five
-  required Milestone 2 topics through their own feature.
-
-## Milestone 1 Planning
-
-### Saad Moazzam - Player Movement and Reward System
-
-**Purpose:**
-
-Allow the player to move through Gridworld while preventing invalid movement and calculating rewards for the result of each action.
-
-**Data:**
-
-The player's position is stored using a list containing a row and column:
-
-```python
-player_position = [0, 0]
-```
-
-The world is represented using a nested list where each inner list represents one row of the grid.
-
-**Steps:**
-
-1. Display the player's current position on the grid.
-2. Accept movement using `W`, `A`, `S`, or `D`.
-3. Calculate the player's requested new position.
-4. Check whether the new position is inside the grid.
-5. Check whether the new position contains a wall.
-6. Reject the movement if the position is invalid.
-7. Update the player's position if the movement is valid.
-8. Calculate a reward based on the result of the action.
-9. Continue running the game until the player reaches the goal or chooses to quit.
-
-**Milestone 1 concepts demonstrated:**
-
-- Planning and problem solving
-- Conditionals
-- `for` and `while` loops
-- Lists and nested lists
-- Functions
-- User input
-- Boolean conditions
-
-### Irfan Nasery - Treasure and World Reward System
-
-**Status:** this section records the original plan. The world now supports
-treasure collection and world data restoration. Connecting collection to player
-movement and scoring is still upcoming work.
-
-**Purpose:**
-
-Add collectible treasures to the Gridworld environment so the player can earn additional rewards while navigating toward the goal.
-
-**Data:**
-
-The original plan used a separate list of treasure positions. The current world
-stores treasures directly as `T` cells in the grid instead.
-
-Example:
-
-```python
-treasures = [
-    [0, 4],
-    [2, 0],
-    [4, 2]
-]
-```
-
-**Steps:**
-
-1. Store treasure locations as `T` cells in the grid.
-2. Display remaining treasures using `T`.
-3. Check whether the player moves onto a treasure location.
-4. Change the treasure cell to `.` after it is collected.
-5. Add the treasure bonus to the player's score.
-6. Continue displaying only the treasures that have not already been collected.
-
-**Milestone 1 concepts demonstrated:**
-
-- Planning and problem solving
-- Conditionals
-- Lists
-- Membership checking using `in`
-- Functions
-- Updating collections
-
-## Reinforcement Learning Direction
-
-The Milestone 1 prototype creates the basic environment needed for reinforcement learning.
-
-The interaction can be represented as:
-
-```text
-State -> Action -> Next State -> Reward
-```
-
-For example:
-
-```text
-State:
-Player is at [0, 0]
-
-Action:
-Move right
-
-Next State:
-Player is at [0, 1]
-
-Reward:
--1
-```
-
-The current player manually chooses the actions.
-
-In a future milestone, an AI agent can use these states, actions, and rewards to learn which actions lead to better total rewards.
-
-The reward system encourages the agent to reach useful locations while avoiding unnecessary or invalid movements.
-
-## Design
-
-The full system architecture and Big-O analysis will be added for Milestone 3 as required by the project specification.
-
-## Required Files
-
-| File | What it is |
-|------|------------|
-| [`MILESTONES.md`](MILESTONES.md) | The project requirements and milestone expectations |
-| [`CONTRIBUTIONS.md`](CONTRIBUTIONS.md) | Records each team member's feature slice and the commits that demonstrate each required topic |
-| [`AI-USAGE.md`](AI-USAGE.md) | Records the team's AI usage and disclosure |
-| [`docs/MILESTONE_2_PLAN.md`](docs/MILESTONE_2_PLAN.md) | Divides the next milestone's work between Saad and Irfan |
+- [MILESTONES.md](MILESTONES.md) — Project milestones and requirements.
+- [CONTRIBUTIONS.md](CONTRIBUTIONS.md) — Individual feature ownership and supporting Git commits.
+- [AI-USAGE.md](AI-USAGE.md) — Course AI policy and team disclosure.
+- [docs/MILESTONE_2_PLAN.md](docs/MILESTONE_2_PLAN.md) — Team's original Milestone 2 work plan (supporting document, not a separate Lab 08 deliverable).
+- [data/maps/README.md](data/maps/README.md) — Map data documentation.
