@@ -206,15 +206,23 @@ def main():
 
         # Save game
         if action == "v":
-            save_game(game, arguments.save_file)
-            print("\nGame saved successfully!\n")
+            try:
+                save_game(game, arguments.save_file)
+            except OSError as error:
+                print(f"\nCannot save game: {error}\n")
+            else:
+                print("\nGame saved successfully!\n")
             continue
 
         # Load game
         if action == "l":
-            load_game(game, arguments.save_file)
-            hint_route = None
-            print("\nGame loaded successfully!\n")
+            try:
+                load_game(game, arguments.save_file)
+            except (OSError, ValueError) as error:
+                print(f"\nCannot load game: {error}\n")
+            else:
+                hint_route = None
+                print("\nGame loaded successfully!\n")
             continue
 
         # Recursive pathfinding hint
