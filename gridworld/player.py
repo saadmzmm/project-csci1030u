@@ -37,3 +37,66 @@ class Player:
 
         self.score = self.score + reward
         return reward
+
+    def get_data(self): 
+        return {
+            "position": self.position.copy(),
+            "score": self.score
+        }
+
+    def load_data(self, data):
+        if not isinstance(data, dict): # checks to make sure data is a dictionary
+            raise ValueError("Player data must be a dictionary.")
+        
+        if "position" not in data or "score" not in data: # checsk to make sure positon and score exist
+            raise ValueError("Missing player data.")
+
+        if not isinstance(data["position"], list): # checks to make sure the position is a list 
+            raise ValueError("Player position must be a list.")
+
+        if len(data["position"]) != 2: # checks to make sure the list is only 2 coordinates
+            raise ValueError("Player position must contain two coordinates only. ")
+
+        if not isinstance(data["position"][0], int) or not isinstance (data["position"][1], int): # checks to make sure the column and row are integers
+            raise ValueError("Coordinates for row and column are not an integer") 
+
+        if not isinstance(data["score"], int): # checks to make sure score is an integer
+            raise ValueError("Score is not an integer")
+
+        self.position = data ["position"].copy() # restore saved position
+        self.score = data ["score"] # restore saved score
+
+    def find_route(self, world):
+        visited = []
+        return self._search_route(world, self.position.copy(), visited)
+
+    def _search_route(self, world, position, visited): #_ indicated its a internal helper method 
+        if not world.is_valid_position(position): #if current pos outside grid, stop exploring that route
+            return None
+
+        if position in visited: # stops from exploring the same square again
+            return None
+        visited.append(position)
+
+        if world.is_goal(position):
+            return [position] # we need to return a list containing the goal position 
+
+        directions = [
+            [-1, 0], #up
+            [1, 0],  #down
+            [0, -1], #left
+            [0, 1]   #right
+        ]
+
+        for direction in directions:
+            next_position = [
+                position[0] + direction[0],
+                position[1] + direction[1]
+            ]
+
+            route = self._search_route(world, next_position, visited)
+
+            if route is not None:
+                return [position] + route
+        return None
+

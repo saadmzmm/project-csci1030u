@@ -4,6 +4,7 @@ import argparse
 
 from gridworld.game import Game
 from gridworld.world import World
+from gridworld.storage import save_game, load_game # allows cli to call when player selects Save or Load
 
 
 def display_grid(game):
@@ -26,6 +27,7 @@ def display_grid(game):
 def main():
     parser = argparse.ArgumentParser(description="Play Gridworld Arena")
     parser.add_argument("--map-file", help="Path to a JSON map file")
+    parser.add_argument("--save-file", default="data/saves/save.json", help="Path to a JSON save file") #4
     arguments = parser.parse_args()
 
     world = World()
@@ -45,13 +47,14 @@ def main():
     print("GRIDWORLD ARENA\n")
     game = Game()
     game.setup(world)
+    hint_route = None
 
     while not game.is_finished():
         display_grid(game)
         print(f"\nScore: {game.player.score}")
 
         try:
-            action = input("Move using W/A/S/D (Q to quit): ")
+            action = input("W/A/S/D to move, H for hint, V to save, L to load, Q to quit") # added new options
             action = action.strip()
             action = action.lower()
         except EOFError:
@@ -63,6 +66,42 @@ def main():
             print("\nGame ended.")
             print(f"Final score: {game.player.score}")
             return
+
+        if action == "v":
+            save_game(game, arguments.save_file)
+            print("\n Game saved successfully! \n")
+            continue
+
+        if action == "l":
+            load_game(game, arguments.save_file)
+            hint_route = None
+            print("\n Game loaded successfully! \n")
+            continue
+
+        if action == "h":
+            if hint_route is None or game.player.position not in hint_route: #player moved out remembered route
+                hint_route = game.player.find_route(game.world) # calculate a new route when necessary
+            if hint_route is None:
+                print("\n No route to the goal found \n")
+            else:
+                current_index = hint_route.index(game.player.position)
+
+                if current_index == len(hint_route) - 1:
+                    print("\nAlready at the goal!\n")
+                    continue
+
+                current_position = game.player.position
+                next_position = hint_route[current_index + 1]
+
+                if next_position[0] > current_position[0]:
+                    print("Hint: Move DOWN (S)")
+                elif next_position[0] < current_position[0]:
+                    print("Hint: Move UP (W)")
+                elif next_position[1] < current_position[1]:
+                    print("Hint: Move LEFT (A)")
+                elif next_position[1] > current_position[1]:
+                    print("Hint: Move RIGHT (D)")
+            continue
 
         if action not in ["w", "a", "s", "d"]:
             print("\nInvalid input. Use W, A, S, or D.\n")
